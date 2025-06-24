@@ -137,7 +137,7 @@ public class TaskManager {
         return result;
     }
 
-    // Update com.yandex.kanban.model.Epic
+    // Update Epic
     private void updateEpicStatus(int epicId) {
         Epic epic = epics.get(epicId);
         if (epic == null) return;
@@ -152,16 +152,15 @@ public class TaskManager {
         boolean allDone = true;
 
         for (Subtask subtask : epicSubtasks) {
+            if (subtask.getStatus() == Status.IN_PROGRESS) {
+                epic.setStatus(Status.IN_PROGRESS);
+                return;
+            }
             if (subtask.getStatus() != Status.NEW) allNew = false;
             if (subtask.getStatus() != Status.DONE) allDone = false;
         }
 
-        if (allDone) {
-            epic.setStatus(Status.DONE);
-        } else if (allNew) {
-            epic.setStatus(Status.NEW);
-        } else {
-            epic.setStatus(Status.IN_PROGRESS);
-        }
+        if (allDone) epic.setStatus(Status.DONE);
+        if (allNew) epic.setStatus(Status.NEW);
     }
 }

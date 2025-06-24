@@ -1,5 +1,9 @@
 package com.yandex.kanban;
 
+import com.yandex.kanban.service.TaskManager;
+import com.yandex.kanban.service.Status;
+import com.yandex.kanban.model.*;
+
 public class Main {
     public static void main(String[] args) {
         TaskManager manager = new TaskManager();

@@ -34,7 +34,7 @@ public class Epic extends Task {
             descriptionLength = 0;
         }
 
-        return "com.yandex.kanban.model.Epic{id=" + getId() +
+        return "Epic{id=" + getId() +
                 ", title='" + getTitle() + '\'' +
                 ", description=" + descriptionLength +
                 ", status=" + getStatus() +

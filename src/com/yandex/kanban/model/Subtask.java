@@ -21,7 +21,7 @@ public class Subtask extends Task {
             descriptionLength = 0;
         }
 
-        return "com.yandex.kanban.model.Subtask{id=" + getId() +
+        return "Subtask{id=" + getId() +
                 ", title='" + getTitle() + '\'' +
                 ", description=" + descriptionLength +
                 ", status=" + getStatus() +

@@ -71,7 +71,7 @@ public class Task {
             descriptionLength = 0;
         }
 
-        return "com.yandex.kanban.model.Task{id=" + id +
+        return "Task{id=" + id +
                 ", title='" + title + '\'' +
                 ", description=" + descriptionLength +
                 ", status=" + status + "}";

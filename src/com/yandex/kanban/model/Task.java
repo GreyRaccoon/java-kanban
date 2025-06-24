@@ -1,4 +1,7 @@
+package com.yandex.kanban.model;
+
 import java.util.Objects;
+import com.yandex.kanban.service.Status;
 
 public class Task {
     private int id;
@@ -68,7 +71,7 @@ public class Task {
             descriptionLength = 0;
         }
 
-        return "Task{id=" + id +
+        return "com.yandex.kanban.model.Task{id=" + id +
                 ", title='" + title + '\'' +
                 ", description=" + descriptionLength +
                 ", status=" + status + "}";

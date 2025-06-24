@@ -1,3 +1,5 @@
+package com.yandex.kanban.model;
+
 public class Subtask extends Task {
     private final int epicId;
 
@@ -19,7 +21,7 @@ public class Subtask extends Task {
             descriptionLength = 0;
         }
 
-        return "Subtask{id=" + getId() +
+        return "com.yandex.kanban.model.Subtask{id=" + getId() +
                 ", title='" + getTitle() + '\'' +
                 ", description=" + descriptionLength +
                 ", status=" + getStatus() +

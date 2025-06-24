@@ -1,3 +1,5 @@
+package com.yandex.kanban.model;
+
 import java.util.ArrayList;
 
 public class Epic extends Task {
@@ -15,11 +17,11 @@ public class Epic extends Task {
         subtaskIds.add(id);
     }
 
-    void removeSubtaskId(int id) {
+    public void removeSubtaskId(int id) {
         subtaskIds.remove(Integer.valueOf(id));
     }
 
-    void clearSubtaskIds() {
+    public void clearSubtaskIds() {
         subtaskIds.clear();
     }
 
@@ -32,7 +34,7 @@ public class Epic extends Task {
             descriptionLength = 0;
         }
 
-        return "Epic{id=" + getId() +
+        return "com.yandex.kanban.model.Epic{id=" + getId() +
                 ", title='" + getTitle() + '\'' +
                 ", description=" + descriptionLength +
                 ", status=" + getStatus() +

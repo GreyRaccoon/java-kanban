@@ -1,3 +1,9 @@
+package com.yandex.kanban.service;
+
+import com.yandex.kanban.model.Epic;
+import com.yandex.kanban.model.Subtask;
+import com.yandex.kanban.model.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -131,7 +137,7 @@ public class TaskManager {
         return result;
     }
 
-    // Update Epic
+    // Update com.yandex.kanban.model.Epic
     private void updateEpicStatus(int epicId) {
         Epic epic = epics.get(epicId);
         if (epic == null) return;

@@ -1,12 +1,13 @@
 package com.yandex.kanban;
 
+import com.yandex.kanban.service.Managers;
 import com.yandex.kanban.service.TaskManager;
 import com.yandex.kanban.service.Status;
 import com.yandex.kanban.model.*;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManager manager = new TaskManager();
+        TaskManager manager = Managers.getDefault();
 
         // Создание задач
         Task task1 = new Task("Помыть посуду", "Помыть посуду после ужина");
@@ -29,8 +30,18 @@ public class Main {
         Subtask subtask3 = new Subtask("Покрасить стены", "Выбрать цвет краски", epic2.getId());
         manager.createSubtask(subtask3);
 
+        // Просмотр задач для заполнения истории
+        System.out.println("Просмотр задач для истории...");
+        manager.getTaskById(1);
+        manager.getTaskById(2);
+        manager.getEpicById(3);
+        manager.getSubtaskById(4);
+        manager.getSubtaskById(5);
+        manager.getEpicById(6);
+        manager.getSubtaskById(7);
+
         // Вывод всех объектов
-        System.out.println("=== Исходные данные ===");
+        System.out.println("\n=== Исходные данные ===");
         printAllTasks(manager);
 
         // Изменение статусов
@@ -44,6 +55,12 @@ public class Main {
 
         subtask3.setStatus(Status.DONE);
         manager.updateSubtask(subtask3);
+
+        // Просмотр измененных задач
+        System.out.println("\nПросмотр измененных задач...");
+        manager.getTaskById(1);
+        manager.getEpicById(3);
+        manager.getEpicById(6);
 
         // Вывод после изменения статусов
         System.out.println("\n=== После изменения статусов ===");
@@ -62,5 +79,6 @@ public class Main {
         System.out.println("Задачи: " + manager.getAllTasks());
         System.out.println("Эпики: " + manager.getAllEpics());
         System.out.println("Подзадачи: " + manager.getAllSubtasks());
+        System.out.println("История: " + manager.getHistory());
     }
 }

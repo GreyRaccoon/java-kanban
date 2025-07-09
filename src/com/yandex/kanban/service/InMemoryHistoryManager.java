@@ -1,11 +1,13 @@
 package com.yandex.kanban.service;
 
 import com.yandex.kanban.model.Task;
+
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private static final int MAX_HISTORY_SIZE = 10;
-    private final ArrayList<Task> history = new ArrayList<>();
+    private final LinkedList<Task> history = new LinkedList<>();
 
     @Override
     public void add(Task task) {

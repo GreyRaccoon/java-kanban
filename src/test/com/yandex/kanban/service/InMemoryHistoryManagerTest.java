@@ -9,26 +9,94 @@ class InMemoryHistoryManagerTest {
     private final HistoryManager history = new InMemoryHistoryManager();
 
     @Test
-    void shouldPreserveTaskVersionInHistory() {
-        Task task = new Task("Task", "Description");
+    void shouldRemoveNodeFromAnyPosition() {
+        Task task1 = new Task("Task1", "Desc");
+        task1.setId(1);
+        Task task2 = new Task("Task2", "Desc");
+        task2.setId(2);
+        Task task3 = new Task("Task3", "Desc");
+        task3.setId(3);
+
+        history.add(task1);
+        history.add(task2);
+        history.add(task3);
+
+        // Удаление из середины
+        history.remove(2);
+        assertEquals(2, history.getHistory().size());
+        assertNull(findTaskById(history.getHistory(), 2));
+
+        // Удаление из начала
+        history.remove(1);
+        assertEquals(1, history.getHistory().size());
+        assertNull(findTaskById(history.getHistory(), 1));
+
+        // Удаление из конца
+        history.remove(3);
+        assertTrue(history.getHistory().isEmpty());
+    }
+
+    @Test
+    void shouldKeepLastVersionOnly() {
+        Task task = new Task("Task", "Desc");
         task.setId(1);
 
         history.add(task);
-
-        task.setTitle("Updated Title");
+        task.setTitle("Updated");
         task.setStatus(Status.DONE);
+        history.add(task); // Дублирование
 
+        ArrayList<Task> historyList = history.getHistory();
+        assertEquals(1, historyList.size());
+        assertEquals("Updated", historyList.get(0).getTitle());
+        assertEquals(Status.DONE, historyList.get(0).getStatus());
+    }
+
+    @Test
+    void shouldPreserveOrder() {
+        Task task1 = new Task("Task1", "Desc");
+        task1.setId(1);
+        Task task2 = new Task("Task2", "Desc");
+        task2.setId(2);
+
+        history.add(task1);
+        history.add(task2);
+        history.add(task1); // Повторное добавление
+
+        ArrayList<Task> historyList = history.getHistory();
+        assertEquals(2, historyList.size());
+        assertEquals(task2, historyList.get(0));
+        assertEquals(task1, historyList.get(1));
+    }
+
+    @Test
+    void shouldIsolateHistoryFromExternalChanges() {
+        Task task = new Task("Original", "Desc");
+        task.setId(1);
         history.add(task);
 
-        ArrayList<Task> historyArrayList = history.getHistory();
-        assertEquals(2, historyArrayList.size(), "История должна содержать 2 записи");
+        task.setTitle("Modified");
+        Task historyTask = history.getHistory().get(0);
 
-        Task firstVersion = historyArrayList.get(0);
-        Task secondVersion = historyArrayList.get(1);
+        assertEquals("Original", historyTask.getTitle());
+    }
 
-        assertEquals("Task", firstVersion.getTitle(), "Название первой версии должно совпадать");
-        assertEquals(Status.NEW, firstVersion.getStatus(), "Статус первой версии должен совпадать");
-        assertEquals("Updated Title", secondVersion.getTitle(), "Название второй версии должно совпадать");
-        assertEquals(Status.DONE, secondVersion.getStatus(), "Статус второй версии должен совпадать");
+    private Task findTaskById(ArrayList<Task> tasks, int id) {
+        return tasks.stream().filter(t -> t.getId() == id).findFirst().orElse(null);
+    }
+
+    @Test
+    void shouldKeepOnlyLastVersionInHistory() {
+        Task task = new Task("Task", "Desc");
+        task.setId(1);
+
+        history.add(task);
+        task.setTitle("Updated");
+        task.setStatus(Status.DONE);
+        history.add(task); // Заменяет первую версию
+
+        ArrayList<Task> historyList = history.getHistory();
+        assertEquals(1, historyList.size());
+        assertEquals("Updated", historyList.get(0).getTitle());
     }
 }

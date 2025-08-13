@@ -1,6 +1,8 @@
 package com.yandex.kanban.service;
 
-import com.yandex.kanban.model.*;
+import com.yandex.kanban.model.Epic;
+import com.yandex.kanban.model.Subtask;
+import com.yandex.kanban.model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,46 +16,68 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void shouldAddAndFindDifferentTaskTypes() {
-        Task task = new Task("Task", "Description");
-        manager.createTask(task);
-
-        Epic epic = new Epic("Epic", "Description");
+    void shouldRemoveSubtaskFromEpic() {
+        Epic epic = new Epic("Epic", "");
         manager.createEpic(epic);
-
-        Subtask subtask = new Subtask("Subtask", "Description", epic.getId());
+        Subtask subtask = new Subtask("Sub", "", epic.getId());
         manager.createSubtask(subtask);
 
-        assertNotNull(manager.getTaskById(task.getId()), "Задача должна быть найдена");
-        assertNotNull(manager.getEpicById(epic.getId()), "Эпик должен быть найден");
-        assertNotNull(manager.getSubtaskById(subtask.getId()), "Подзадача должна быть найдена");
+        manager.deleteSubtaskById(subtask.getId());
+
+        assertFalse(epic.getSubtaskIds().contains(subtask.getId()));
     }
 
     @Test
-    void generatedAndManualIdsShouldNotConflict() {
-        Task task1 = new Task("Task 1", "Description");
-        manager.createTask(task1); // Генерируемый ID
+    void shouldRemoveSubtasksAndHistoryWhenDeletingEpic() {
+        Epic epic = new Epic("Epic", "");
+        manager.createEpic(epic);
+        Subtask subtask = new Subtask("Sub", "", epic.getId());
+        manager.createSubtask(subtask);
 
-        Task task2 = new Task("Task 2", "Description");
-        task2.setId(100); // Ручной ID
-        manager.createTask(task2);
+        manager.getEpicById(epic.getId());
+        manager.getSubtaskById(subtask.getId());
+        manager.deleteEpicById(epic.getId());
 
-        assertNotEquals(task1.getId(), task2.getId(),
-                "Автоматические и ручные ID не должны конфликтовать");
-
-        assertEquals(2, manager.getAllTasks().size(),
-                "Обе задачи должны быть добавлены");
+        assertTrue(manager.getHistory().isEmpty());
+        assertNull(manager.getSubtaskById(subtask.getId()));
     }
 
     @Test
-    void taskShouldRemainUnchangedAfterAdding() {
-        Task original = new Task("Original", "Description");
-        manager.createTask(original);
+    void shouldUpdateEpicStatusWhenSubtaskChanged() {
+        Epic epic = new Epic("Epic", "");
+        manager.createEpic(epic);
+        Subtask subtask = new Subtask("Sub", "", epic.getId());
+        manager.createSubtask(subtask);
 
-        Task saved = manager.getTaskById(original.getId());
+        subtask.setStatus(Status.DONE);
+        manager.updateSubtask(subtask);
 
-        assertEquals(original.getTitle(), saved.getTitle(), "Название должно совпадать");
-        assertEquals(original.getDescription(), saved.getDescription(), "Описание должно совпадать");
-        assertEquals(original.getStatus(), saved.getStatus(), "Статус должен совпадать");
+        assertEquals(Status.DONE, epic.getStatus());
+    }
+
+    @Test
+    void shouldIgnoreUpdateWithNonExistingId() {
+        Task task = new Task("Task", "Desc");
+        manager.createTask(task);
+        int originalId = task.getId();
+
+        task.setId(999); // Несуществующий ID
+        manager.updateTask(task);
+
+        Task savedTask = manager.getTaskById(originalId);
+        assertEquals("Task", savedTask.getTitle());
+    }
+
+    @Test
+    void shouldNotUpdateEpicIfSubtaskChangedWithoutManager() {
+        Epic epic = new Epic("Epic", "");
+        manager.createEpic(epic);
+        Subtask subtask = new Subtask("Sub", "", epic.getId());
+        manager.createSubtask(subtask);
+
+        // Изменение без вызова updateSubtask()
+        subtask.setStatus(Status.DONE);
+
+        assertEquals(Status.NEW, manager.getEpicById(epic.getId()).getStatus());
     }
 }
